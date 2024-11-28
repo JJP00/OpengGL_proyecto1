@@ -81,15 +81,22 @@ unsigned int indices[] = {
     1, 2, 3  // second triangle
 };
 
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = 800 / 2.0f;
-float lastY = 600 / 2.0f;
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
+
+// iluminacion
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 // ---------------------------------------------------------------------------------------------
 // callback por si se redimensiona la ventana
@@ -169,7 +176,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Definicion de la ventana GLFW -> libreria que maneja ventanas
-    GLFWwindow *ventana = glfwCreateWindow(800, 600, "Primerita ventanita jiji uwu", NULL, NULL);
+    GLFWwindow *ventana = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Primerita ventanita jiji uwu", NULL, NULL);
 
     // setup de las entradas que va a leer la ventana
     glfwSetInputMode(ventana, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -197,105 +204,95 @@ int main(void)
     // VAO y VBO
     // ---------------------------------------------------------------------------------------------
 
-    unsigned int VBO; // vertex buffer objects, almacena los datos del vertice en la GPU...
-    unsigned int VAO; // vertex array  objects, almacena el VBO y los atributos, explica lo que significa cada parte del vertice, posición, normal, coord de las texturas...
-    unsigned int EBO; // Element buffer objects, indica el orden de dibujado de cada vertice
+    unsigned int VBO;     // vertex buffer objects, almacena los datos del vertice en la GPU...
+    unsigned int cubeVAO; // vertex array  objects, almacena el VBO y los atributos, explica lo que significa cada parte del vertice, posición, normal, coord de las texturas...
 
     // glGenBuffers(1, &EBO);
     glGenBuffers(1, &VBO); // genera uno o mas ids para cada VBO
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &cubeVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);                                        // asociar y definir que VBO es de tipo GL_ARRAY_BUFFER
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // carga los datos del vetice al buffer
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
+    glBindVertexArray(cubeVAO);
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+
     // // color attribute
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     // glEnableVertexAttribArray(1);
     // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    // glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    unsigned int lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
+    glBindVertexArray(lightCubeVAO);
 
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); no desenlazar el EBO cuando esta activo el VAO, ya que los elementos enlazados estan almacenados en el VAO
-
-    glBindVertexArray(0);
-
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // para que se vea las lineas...
 
-    Shader ourShader("../resources/vertex/shader.vert", "../resources/fragment/shader.frag");
+    Shader lightingShader("../resources/vertex/shader.vert", "../resources/fragment/shader.frag");
+    Shader lightCubeShader("../resources/vertex/lightShader.vert", "../resources/fragment/lightShader.frag");
 
     // ---------------------------------------------------------------------------------------------
     // TEXTURAS
     // ---------------------------------------------------------------------------------------------
 
-    // Textura 1 - Contenedor
-    unsigned int texture;
-    glGenTextures(1, &texture);
+    // // Textura 1 - Contenedor
+    // unsigned int texture;
+    // glGenTextures(1, &texture);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    // glBindTexture(GL_TEXTURE_2D, texture);
 
-    // wraping de la textura
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // filtro de la textura
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    int width, height, nrChannels;
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load("../resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture 1" << std::endl;
-    }
-    stbi_image_free(data);
+    // // wraping de la textura
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // // filtro de la textura
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // int width, height, nrChannels;
+    // // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+    // unsigned char *data = stbi_load("../resources/textures/container.jpg", &width, &height, &nrChannels, 0);
+    // if (data)
+    // {
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    //     glGenerateMipmap(GL_TEXTURE_2D);
+    // }
+    // else
+    // {
+    //     std::cout << "Failed to load texture 1" << std::endl;
+    // }
+    // stbi_image_free(data);
 
-    // Texxtura 2 - Smile
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    // // Texxtura 2 - Smile
+    // unsigned int texture2;
+    // glGenTextures(1, &texture2);
+    // glBindTexture(GL_TEXTURE_2D, texture2);
 
-    // wraping de la textura
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // filtro de la textura
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // // wraping de la textura
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // // filtro de la textura
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    data = stbi_load("../resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture 2" << std::endl;
-    }
+    // data = stbi_load("../resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    // if (data)
+    // {
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    //     glGenerateMipmap(GL_TEXTURE_2D);
+    // }
+    // else
+    // {
+    //     std::cout << "Failed to load texture 2" << std::endl;
+    // }
 
-    stbi_image_free(data);
-
-    ourShader.use();
-    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
-    ourShader.setInt("texture2", 1);
-
-    // vectores y tranformaciones
-
-    glEnable(GL_DEPTH_TEST);
+    // stbi_image_free(data);
 
     // ---------------------------------------------------------------------------------------------
     // Loop de renderizado, hasta que no cerremos la ventana, no va a parar.
@@ -312,55 +309,58 @@ int main(void)
 
         // VVV Renderizado... VVV
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // configura el color al limpiar el buffer
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);               // configura el color al limpiar el buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // limpia el buffer, por lo tanto, se mostrará el color configurado previamente.
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, texture);
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, texture2);
 
         // glUseProgram(shaderProgram);
-        ourShader.use();
+        lightingShader.use();
+        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
         // ---------------------------------------------------------------------------------------------
         // Transformada del giro
         // ---------------------------------------------------------------------------------------------
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f)); // giro al cubo
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        // glm::mat4 trans = glm::mat4(1.0f);
+        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f)); // giro al cubo
+        // unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         // ---------------------------------------------------------------------------------------------
-        // Transformada de la perspectica
+        // Transformada de la perspectica y de la camara
         // ---------------------------------------------------------------------------------------------
 
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
-
-        // ---------------------------------------------------------------------------------------------
-        // Trasformadas de la camara
-        // ---------------------------------------------------------------------------------------------
-
-        glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        glm::mat4 projection = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        glm::mat4 view = glm::mat4(1.0f);
         view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
-        // note that we're translating the scene in the reverse direction of where we want to move
+        projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        lightingShader.setMat4("projection", projection);
+        lightingShader.setMat4("view", view); // note that we're translating the scene in the reverse direction of where we want to move
 
-        // matriz de proyección
-        glBindVertexArray(VAO);
-        glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
+        // world transformation
+        glm::mat4 model = glm::mat4(1.0f);
+        lightingShader.setMat4("model", model);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        // render the cube
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // fuente de luz
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         // glBindVertexArray(0);
         //  Una ventana normalmente tiene 2 buffers:
         //  front donde se muestra el resultado y
@@ -369,9 +369,9 @@ int main(void)
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     glfwTerminate();
     return 0;
