@@ -11,75 +11,48 @@
 #include <STB_IMAGE/stb_image.h>
 #include "class/camera.hpp"
 
-// float vertices[] = {
-//     // positions          // colors           // texture coords
-//     0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top right
-//     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // bottom right
-//     -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-//     -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f, 1.0f   // top left
-// };
-
 float vertices[] = {
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
 
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f};
-
-float borderColor[] = {1.0f, 1.0f, 0.0, 1.0f};
-
-glm::vec3 cubePositions[] = {
-    glm::vec3(0.0f, 0.0f, 0.0f),
-    glm::vec3(2.0f, 5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f, 3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f, 2.0f, -2.5f),
-    glm::vec3(1.5f, 0.2f, -1.5f),
-    glm::vec3(-1.3f, 1.0f, -1.5f)};
-
-unsigned int indices[] = {
-    0, 1, 3, // first triangle
-    1, 2, 3  // second triangle
-};
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f};
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -200,6 +173,8 @@ int main(void)
         return -1;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     // ---------------------------------------------------------------------------------------------
     // VAO y VBO
     // ---------------------------------------------------------------------------------------------
@@ -216,9 +191,11 @@ int main(void)
 
     glBindVertexArray(cubeVAO);
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-
+    // normal attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     // // color attribute
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     // glEnableVertexAttribArray(1);
@@ -232,71 +209,12 @@ int main(void)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // para que se vea las lineas...
 
     Shader lightingShader("../resources/vertex/shader.vert", "../resources/fragment/shader.frag");
     Shader lightCubeShader("../resources/vertex/lightShader.vert", "../resources/fragment/lightShader.frag");
-
-    // ---------------------------------------------------------------------------------------------
-    // TEXTURAS
-    // ---------------------------------------------------------------------------------------------
-
-    // // Textura 1 - Contenedor
-    // unsigned int texture;
-    // glGenTextures(1, &texture);
-
-    // glBindTexture(GL_TEXTURE_2D, texture);
-
-    // // wraping de la textura
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // // filtro de la textura
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // int width, height, nrChannels;
-    // // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    // unsigned char *data = stbi_load("../resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-    // if (data)
-    // {
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-    // }
-    // else
-    // {
-    //     std::cout << "Failed to load texture 1" << std::endl;
-    // }
-    // stbi_image_free(data);
-
-    // // Texxtura 2 - Smile
-    // unsigned int texture2;
-    // glGenTextures(1, &texture2);
-    // glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // // wraping de la textura
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // // filtro de la textura
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // data = stbi_load("../resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-    // if (data)
-    // {
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-    // }
-    // else
-    // {
-    //     std::cout << "Failed to load texture 2" << std::endl;
-    // }
-
-    // stbi_image_free(data);
-
-    // ---------------------------------------------------------------------------------------------
-    // Loop de renderizado, hasta que no cerremos la ventana, no va a parar.
-    // ---------------------------------------------------------------------------------------------
 
     while (!glfwWindowShouldClose(ventana))
     {
@@ -321,29 +239,32 @@ int main(void)
         lightingShader.use();
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        lightingShader.setVec3("lightPos", lightPos);
+        lightingShader.setVec3("viewPos", camera.Position);
 
         // ---------------------------------------------------------------------------------------------
         // Transformada del giro
         // ---------------------------------------------------------------------------------------------
+
         // glm::mat4 trans = glm::mat4(1.0f);
-        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0f)); // giro al cubo
-        // unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 1.0f, 1.0f)); // giro al cubo
+        // unsigned int transformLoc = glGetUniformLocation(lightingShader.ID, "transform");
         // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         // ---------------------------------------------------------------------------------------------
         // Transformada de la perspectica y de la camara
         // ---------------------------------------------------------------------------------------------
 
-        glm::mat4 projection = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 view = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view); // note that we're translating the scene in the reverse direction of where we want to move
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
         lightingShader.setMat4("model", model);
+
+        // Posicion del cubo de luz
 
         // render the cube
         glBindVertexArray(cubeVAO);
